@@ -1,37 +1,28 @@
 # ATSync AI 🚀
 
-AI-powered ATS Resume Analyzer built using JavaScript, Tailwind CSS, PDF.js, and Chart.js.
+Modern ATS-inspired resume analysis platform designed to evaluate resumes against role-specific skill requirements and generate recruiter-focused insights through interactive analytics dashboards.
 
 ---
 
-## 📌 Overview
+# ✨ Features
 
-ATSync AI is a modern ATS-inspired resume analyzer that evaluates resumes against role-specific skill databases and generates recruiter-focused insights through an interactive analytics dashboard.
-
-The application parses PDF resumes, detects technical and professional skills dynamically, calculates ATS compatibility scores, and provides recommendations to improve resume visibility.
-
----
-
-## ✨ Features
-
-- PDF Resume Parsing
-- Dynamic Skill Matching
+- PDF Resume Upload & Parsing
+- Role-Based Skill Analysis
 - ATS Compatibility Scoring
-- Recruiter Visibility Analysis
+- Recruiter Visibility Insights
 - Missing Skill Detection
 - Resume Strength Evaluation
 - Interactive Analytics Dashboard
-- Role-Based Resume Analysis
-- Modern Responsive UI
-- Chart-Based Visualization
+- Dynamic Skill Matching
+- Responsive Modern UI
+- Data Visualization with Charts
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
 - HTML5
 - CSS3
-- Tailwind CSS
 - JavaScript (ES6)
 - PDF.js
 - Chart.js
@@ -39,31 +30,30 @@ The application parses PDF resumes, detects technical and professional skills dy
 
 ---
 
-## ⚙️ How It Works
+# ⚙️ System Workflow
 
-1. Upload Resume PDF
-2. PDF.js extracts resume text
-3. User enters target role
-4. System selects role-specific skill database
-5. Resume content is analyzed dynamically
-6. ATS score and insights are generated
-7. Dashboard displays analytics and recommendations
+1. User uploads resume PDF
+2. PDF.js extracts resume content
+3. Target role is selected
+4. System compares resume against role-specific skill datasets
+5. ATS compatibility score is generated
+6. Dashboard displays analytics and recommendations
 
 ---
 
-## 📊 ATS Analysis Includes
+# 📊 Analytics Dashboard Includes
 
 - ATS Score
 - Recruiter Visibility
 - Resume Strength
-- Keyword Optimization
-- Matched Skills
+- Skill Match Percentage
 - Missing Skills
-- Improvement Recommendations
+- Resume Optimization Suggestions
+- Keyword Analysis
 
 ---
 
-## 📁 Project Structure
+# 📁 Project Structure
 
 ```bash
 resume_analyzer1/
@@ -77,17 +67,24 @@ resume_analyzer1/
 ├── assets/
 ├── docs/
 ├── components/
+├── analytics/
 └── sample-data/
-
-## 🚀 Future Improvements
-
-- AI-based semantic analysis
-- Real-time job market integration
-- Resume export functionality
-- Backend integration
-- Authentication system
+```
 
 ---
 
-## 👩‍💻 Developed By
+# 🚀 Planned Enhancements
+
+- AI-powered semantic analysis
+- Backend integration with Java Spring Boot
+- Authentication system
+- Resume export functionality
+- Advanced recruiter analytics
+- Real-time job trend analysis
+
+---
+
+# 👩‍💻 Developed By
+Sanjana Ganguly
+
 Sanjana Ganguly
