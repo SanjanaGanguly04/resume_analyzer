@@ -1,0 +1,14 @@
+{
+  "ats_score": 84,
+  "visibility": "Good",
+  "strength": "Strong",
+  "matched_skills": [
+    "JavaScript",
+    "React",
+    "Git"
+  ],
+  "missing_skills": [
+    "Docker",
+    "AWS"
+  ]
+}

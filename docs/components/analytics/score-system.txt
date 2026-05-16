@@ -1,0 +1,1 @@
+ATS score is dynamically calculated based on matched skills against role-specific requirements.
