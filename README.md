@@ -78,15 +78,6 @@ resume_analyzer1/
 ├── docs/
 ├── components/
 └── sample-data/
-```
-
----
-
-## 📸 Screenshots
-
-(Add screenshots here)
-
----
 
 ## 🚀 Future Improvements
 
@@ -99,4 +90,4 @@ resume_analyzer1/
 ---
 
 ## 👩‍💻 Developed By
-
+Sanjana Ganguly
