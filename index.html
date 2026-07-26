@@ -1,311 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ATSync — Resume Diagnostics</title>
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <title>ATSync AI</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- PDF.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- External CSS -->
-    <link rel="stylesheet" href="style.css">
-
+<link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 min-h-screen text-white overflow-x-hidden">
+<div class="scan-grid" aria-hidden="true"></div>
 
-    <!-- Background Glow -->
-    <div class="absolute top-0 left-0 w-96 h-96 bg-cyan-500/20 blur-[120px] rounded-full"></div>
+<!-- Nav -->
+<nav class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◎</span>
+    <span class="brand-name">ATSync</span>
+    <span class="brand-tag">/ diagnostics</span>
+  </div>
+  <div class="nav-meta">v2.0 — job‑aware scan engine</div>
+</nav>
 
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 blur-[120px] rounded-full"></div>
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">// resume scan, tuned to the job</p>
+    <h1>Find out what a screener<br>sees before a human does.</h1>
+    <p class="hero-sub">
+      Upload your resume and paste the job you're applying to. ATSync reads both,
+      finds the real overlap and the real gaps, and tells you exactly what to fix —
+      no generic checklist, no recycled advice.
+    </p>
+    <div class="hero-stats">
+      <div><span class="stat-num">9</span><span class="stat-label">skill domains scanned</span></div>
+      <div><span class="stat-num">7</span><span class="stat-label">resume sections checked</span></div>
+      <div><span class="stat-num">100%</span><span class="stat-label">based on your JD, not a template</span></div>
+    </div>
+  </div>
 
-    <!-- Navbar -->
-    <nav class="relative z-10 flex justify-between items-center px-10 py-6 border-b border-white/10 backdrop-blur-xl">
+  <div class="hero-demo" aria-hidden="true">
+    <div class="gauge-shell">
+      <svg viewBox="0 0 240 140" class="gauge-arc-svg">
+        <path class="zone zone-bad" d="M26,118 A94,94 0 0,1 90.95,28.6"/>
+        <path class="zone zone-warn" d="M90.95,28.6 A94,94 0 0,1 175.25,41.95"/>
+        <path class="zone zone-good" d="M175.25,41.95 A94,94 0 0,1 214,118"/>
+        <g class="dial-ticks"></g>
+        <line class="needle-line" x1="120" y1="118" x2="197.05" y2="54.26"/>
+        <circle class="needle-hub" cx="120" cy="118" r="7"/>
+      </svg>
+      <div class="gauge-scale-labels"><span>0</span><span>50</span><span>100</span></div>
+      <div class="gauge-readout-plate">
+        <span class="gauge-num">78</span><span class="gauge-pct">%</span>
+        <span class="gauge-caption">sample scan</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">
-            ATSync AI
-        </h1>
+<!-- Input Panel -->
+<section class="panel-row">
 
-        <button
-            class="bg-gradient-to-r from-cyan-500 to-indigo-600 px-6 py-3 rounded-2xl font-semibold shadow-xl shadow-indigo-500/30 hover:scale-105 transition-all duration-300">
+  <div class="card">
+    <div class="card-head">
+      <span class="card-icon">01</span>
+      <div>
+        <h2>Resume</h2>
+        <p>PDF, parsed locally in your browser</p>
+      </div>
+    </div>
 
-            AI Resume Scanner
+    <label class="dropzone" id="dropzone" for="resumeFile">
+      <input type="file" id="resumeFile" accept=".pdf" hidden>
+      <div class="dropzone-inner">
+        <span class="dz-icon">⇪</span>
+        <span class="dz-text">Drop resume PDF, or click to browse</span>
+      </div>
+      <div class="dropzone-scanline"></div>
+    </label>
 
-        </button>
+    <div id="resumeStatus" class="status-line">No file loaded yet</div>
+  </div>
 
-    </nav>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-icon">02</span>
+      <div>
+        <h2>Target role &amp; job description</h2>
+        <p>The more of the real posting you paste, the sharper the scan</p>
+      </div>
+    </div>
 
-    <!-- Hero -->
-    <section class="relative z-10 text-center py-24 px-6">
+    <input type="text" id="roleInput" placeholder="e.g. Frontend Developer, Data Analyst, HR Generalist…" class="text-input">
 
-        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/10 px-5 py-2 rounded-full text-sm text-cyan-300 mb-8">
+    <textarea id="jdInput" class="text-area" rows="5" placeholder="Optional — paste the job description here for a scan tuned to this exact posting"></textarea>
+  </div>
 
-            <i class="bi bi-stars"></i>
-            AI Powered ATS Optimization Platform
+</section>
 
+<div class="cta-row">
+  <button id="analyzeBtn" onclick="analyzeResume()" class="analyze-btn">
+    <span class="btn-label">Run scan</span>
+  </button>
+</div>
+
+<!-- Loading -->
+<section id="loadingArea" class="loading-area hidden">
+  <div class="loading-card">
+    <div class="loading-scan"><div class="loading-scan-bar"></div></div>
+    <div class="loading-steps">
+      <div class="step" data-step="0"><span class="step-dot"></span>Reading resume text</div>
+      <div class="step" data-step="1"><span class="step-dot"></span>Extracting keywords from job description</div>
+      <div class="step" data-step="2"><span class="step-dot"></span>Cross‑matching skill domains</div>
+      <div class="step" data-step="3"><span class="step-dot"></span>Checking resume structure</div>
+      <div class="step" data-step="4"><span class="step-dot"></span>Building recommendations</div>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section id="resultArea" class="results hidden">
+
+  <div class="report-grid">
+
+    <div class="score-card">
+      <div class="gauge-shell">
+        <svg viewBox="0 0 240 140" class="gauge-arc-svg">
+          <path class="zone zone-bad" d="M26,118 A94,94 0 0,1 90.95,28.6"/>
+          <path class="zone zone-warn" d="M90.95,28.6 A94,94 0 0,1 175.25,41.95"/>
+          <path class="zone zone-good" d="M175.25,41.95 A94,94 0 0,1 214,118"/>
+          <g class="dial-ticks"></g>
+          <line class="needle-line" id="gaugeNeedle" x1="120" y1="118" x2="20" y2="118"/>
+          <circle class="needle-hub" cx="120" cy="118" r="7"/>
+        </svg>
+        <div class="gauge-scale-labels"><span>0</span><span>50</span><span>100</span></div>
+        <div class="gauge-readout-plate">
+          <span class="gauge-num" id="finalScore">0</span><span class="gauge-pct">%</span>
+          <span class="gauge-caption">ATS match score</span>
         </div>
-
-        <h1 class="text-6xl md:text-7xl font-black leading-tight max-w-6xl mx-auto">
-
-            Analyze Your Resume With
-
-            <span class="bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">
-                Gemini AI Intelligence
-            </span>
-
-        </h1>
-
-        <p class="text-slate-400 mt-10 text-xl max-w-3xl mx-auto leading-relaxed">
-
-            Upload your resume and receive AI-generated recruiter insights,
-            ATS compatibility scores,
-            market-demand skills,
-            and personalized recommendations.
-
-        </p>
-
-    </section>
-
-    <!-- Upload Section -->
-    <section class="relative z-10 max-w-6xl mx-auto px-6">
-
-        <div class="grid md:grid-cols-2 gap-8">
-
-            <!-- Resume Upload -->
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl hover:-translate-y-1 transition-all duration-300">
-
-                <div class="flex items-center gap-4 mb-6">
-
-                    <div class="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center">
-
-                        <i class="bi bi-file-earmark-pdf text-2xl text-cyan-400"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h2 class="text-2xl font-bold">
-                            Upload Resume
-                        </h2>
-
-                        <p class="text-slate-400">
-                            PDF parsing & AI analysis
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <input
-                    type="file"
-                    id="resumeFile"
-                    accept=".pdf"
-                    class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-slate-300"
-                >
-
-                <div
-                    id="resumeStatus"
-                    class="mt-5 text-slate-400"
-                >
-                    Upload your resume PDF
-                </div>
-
-            </div>
-
-            <!-- Target Role -->
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl hover:-translate-y-1 transition-all duration-300">
-
-                <div class="flex items-center gap-4 mb-6">
-
-                    <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
-
-                        <i class="bi bi-briefcase-fill text-2xl text-indigo-400"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h2 class="text-2xl font-bold">
-                            Target Role
-                        </h2>
-
-                        <p class="text-slate-400">
-                            AI-driven market analysis
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <input
-                    type="text"
-                    id="roleInput"
-                    placeholder="e.g. Frontend Developer"
-                    class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-white placeholder:text-slate-500"
-                >
-
-                <p class="text-slate-400 mt-5">
-                    Try Software Engineer, Data Analyst,
-                    Full Stack Developer, etc.
-                </p>
-
-            </div>
-
-        </div>
-
-        <!-- Analyze Button -->
-        <button
-            id="analyzeBtn"
-            onclick="analyzeResume()"
-            class="w-full mt-10 bg-gradient-to-r from-cyan-500 to-indigo-600 py-5 rounded-3xl text-xl font-bold shadow-2xl shadow-indigo-500/30 hover:scale-[1.01] transition-all duration-300"
-        >
-
-            Analyze Resume
-
-        </button>
-
-    </section>
-
-    <!-- Results -->
-    <section
-        id="resultArea"
-        class="hidden relative z-10 max-w-7xl mx-auto px-6 py-20"
-    >
-
-        <!-- Stats -->
-        <div class="grid lg:grid-cols-4 gap-6">
-
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
-
-                <p class="text-slate-400 mb-3">
-                    ATS Score
-                </p>
-
-                <h1
-                    id="finalScore"
-                    class="text-6xl font-black bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent"
-                >
-                    0%
-                </h1>
-
-            </div>
-
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-
-                <p class="text-slate-400">
-                    Recruiter Visibility
-                </p>
-
-                <h2
-                    id="visibilityScore"
-                    class="text-4xl font-bold mt-4 text-green-400"
-                >
-                    High
-                </h2>
-
-            </div>
-
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-
-                <p class="text-slate-400">
-                    Resume Strength
-                </p>
-
-                <h2
-                    id="resumeStrength"
-                    class="text-4xl font-bold mt-4 text-cyan-400"
-                >
-                    Strong
-                </h2>
-
-            </div>
-
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-
-                <p class="text-slate-400">
-                    Keyword Optimization
-                </p>
-
-                <h2
-                    id="keywordScore"
-                    class="text-4xl font-bold mt-4 text-indigo-400"
-                >
-                    82%
-                </h2>
-
-            </div>
-
-        </div>
-
-        <!-- Analytics -->
-        <div class="grid lg:grid-cols-2 gap-8 mt-8">
-
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-
-                <h2 class="text-3xl font-bold mb-6">
-                    Missing Skills
-                </h2>
-
-                <ul
-                    id="missingList"
-                    class="flex flex-wrap gap-3"
-                ></ul>
-
-                <h2 class="text-3xl font-bold mt-10 mb-6">
-                    Matched Skills
-                </h2>
-
-                <ul
-                    id="matchedList"
-                    class="flex flex-wrap gap-3"
-                ></ul>
-
-            </div>
-
-            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-
-                <h2 class="text-3xl font-bold mb-8">
-                    Skill Analytics
-                </h2>
-
-                <canvas id="skillsChart"></canvas>
-
-            </div>
-
-        </div>
-
-        <!-- AI Recommendations -->
-        <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl mt-8">
-
-            <h2 class="text-3xl font-bold mb-8">
-                Gemini AI Recommendations
-            </h2>
-
-            <div
-                id="aiSuggestions"
-                class="space-y-4"
-            ></div>
-
-        </div>
-
-    </section>
-
-    <script src="script.js"></script>
-
+      </div>
+    </div>
+
+    <div class="mini-stats">
+      <div class="mini-stat">
+        <p>Recruiter visibility</p>
+        <h3 id="visibilityScore">—</h3>
+      </div>
+      <div class="mini-stat">
+        <p>Resume strength</p>
+        <h3 id="resumeStrength">—</h3>
+      </div>
+      <div class="mini-stat">
+        <p>Structure completeness</p>
+        <h3 id="sectionScoreLabel">—</h3>
+      </div>
+      <div class="mini-stat">
+        <p>Quantified impact</p>
+        <h3 id="impactScoreLabel">—</h3>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Resume Summary -->
+  <div class="section-block">
+    <h2 class="block-title">Resume summary</h2>
+    <div class="summary-grid" id="summaryGrid"></div>
+  </div>
+
+  <!-- Sections Found -->
+  <div class="section-block">
+    <h2 class="block-title">Structure check</h2>
+    <p class="block-sub">These are the sections a screener and a recruiter both look for.</p>
+    <div class="checklist" id="sectionChecklist"></div>
+  </div>
+
+  <!-- Skill Matrix -->
+  <div class="two-col">
+    <div class="section-block">
+      <h2 class="block-title">Skill match</h2>
+      <p class="block-sub" id="skillMatchSub"></p>
+      <h3 class="sub-title">Matched</h3>
+      <ul class="pill-list" id="matchedList"></ul>
+      <h3 class="sub-title">Missing</h3>
+      <ul class="pill-list" id="missingList"></ul>
+    </div>
+
+    <div class="section-block">
+      <h2 class="block-title">Coverage by domain</h2>
+      <p class="block-sub">How your resume covers each skill domain, independent of the target role.</p>
+      <canvas id="domainChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="section-block">
+    <h2 class="block-title">Match breakdown</h2>
+    <div class="chart-wrap">
+      <canvas id="skillsChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="section-block">
+    <h2 class="block-title">Recommendations</h2>
+    <div id="aiSuggestions" class="suggestions"></div>
+  </div>
+
+</section>
+
+<script src="script.js"></script>
 </body>
-
 </html>
